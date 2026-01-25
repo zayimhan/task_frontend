@@ -1,0 +1,107 @@
+/* Sayfa Genel Arka Planı */
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+/* KART TASARIMI */
+.card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  overflow: hidden; /* Header'ın köşeleri taşmasın diye */
+}
+
+/* Header (Degrade Mavi) */
+.card-header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  padding: 2rem 1rem;
+  border-bottom: none;
+}
+
+/* Form Etiketleri */
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6c757d;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+/* Input Alanları */
+.form-control,
+.form-select {
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+/* Input Focus Efekti */
+.form-control:focus,
+.form-select:focus {
+  background-color: #fff;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+  transform: translateY(-2px);
+}
+
+/* İkonlu Input Grupları İçin */
+.input-group-text {
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  color: #0d6efd;
+}
+
+.input-group .form-control {
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+
+.input-group .form-control:focus {
+  border-color: #0d6efd; /* Focus olunca sol border'ı tamamla */
+  border-left: 2px solid #0d6efd;
+}
+
+/* Adres Kutusu */
+.address-box {
+  background-color: #f1f3f5;
+  border: 2px dashed #dee2e6;
+  border-radius: 15px;
+  transition: all 0.3s;
+}
+
+.address-box:hover {
+  border-color: #adb5bd;
+  background-color: #e9ecef;
+}
+
+/* Kayıt Butonu */
+.btn-primary {
+  border-radius: 12px;
+  padding: 14px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+}
+
+.btn-primary:disabled {
+  background-color: #a0bbf5;
+  border-color: #a0bbf5;
+}

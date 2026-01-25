@@ -1,0 +1,74 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-white text-center py-4">
+                    <h4 class="mb-0 fw-bold">Doğrulama</h4>
+                    <p class="mb-0 mt-2 text-white-50 small">Hesap güvenliğiniz için lütfen kodu girin.</p>
+                </div>
+
+                <div class="card-body p-5">
+
+                    <div *ngIf="errorMessage" class="alert alert-danger alert-custom d-flex align-items-center"
+                        role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                        <div>{{ errorMessage }}</div>
+                    </div>
+
+                    <div *ngIf="successMessage" class="alert alert-success alert-custom d-flex align-items-center"
+                        [class.fade-out]="isFadingOut" role="alert">
+                        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                        <div class="fw-bold">{{ successMessage }}</div>
+                    </div>
+
+                    <div class="text-center mb-4 mt-2">
+                        <p class="text-muted">
+                            Lütfen <strong>{{ verificationType === 'EMAIL' ? 'mail adresinize' : 'telefonunuza'
+                                }}</strong> gelen doğrulama kodunu giriniz.
+                        </p>
+                    </div>
+
+                    <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()">
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase ls-1">Doğrulama
+                                Kodu</label>
+                            <input type="text" class="form-control form-control-lg text-center fw-bold text-primary"
+                                style="letter-spacing: 0.8em; font-size: 1.8rem; height: 60px;" formControlName="code"
+                                placeholder="______" maxlength="6">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" [disabled]="verifyForm.invalid">
+                                Doğrula ve Giriş Yap
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="card-footer text-center py-3">
+                    <small class="text-muted">
+                        Kod gelmedi mi?
+
+                        <a *ngIf="countdown === 0 && !isResending" href="javascript:void(0)" (click)="resendCode()"
+                            class="text-decoration-none fw-bold text-primary ms-1">
+                            Tekrar Gönder
+                        </a>
+
+                        <span *ngIf="isResending" class="text-primary ms-1">
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            Gönderiliyor...
+                        </span>
+
+                        <span *ngIf="countdown > 0 && !isResending" class="text-danger fw-bold ms-1">
+                            <i class="bi bi-clock-history"></i> {{ countdown }} saniye bekleyiniz
+                        </span>
+
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

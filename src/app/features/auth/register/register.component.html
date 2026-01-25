@@ -1,0 +1,148 @@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+
+                <div class="card-header text-center text-white">
+                    <h3 class="fw-bold mb-1">Hesap Oluştur</h3>
+                    <p class="mb-0 opacity-75 small">Aramıza katılmak için formu doldurun</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div *ngIf="errorMessage"
+                        class="alert alert-danger d-flex align-items-center rounded-3 border-0 shadow-sm" role="alert">
+                        <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+                        <div>{{ errorMessage }}</div>
+                    </div>
+
+                    <div *ngIf="successMessage"
+                        class="alert alert-success d-flex align-items-center rounded-3 border-0 shadow-sm" role="alert">
+                        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                        <div>{{ successMessage }}</div>
+                    </div>
+
+                    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+                        <div class="mb-4">
+                            <label class="form-label">TC Kimlik Numarası</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
+                                <input type="text" class="form-control" formControlName="tc"
+                                    placeholder="11 Haneli TC No" maxlength="11">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Ad Soyad</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                    <input type="text" class="form-control" formControlName="fullName"
+                                        placeholder="Adınız Soyadınız">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">E-Posta Adresi</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                    <input type="email" class="form-control" formControlName="email"
+                                        placeholder="ornek@mail.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Telefon Numarası</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                                    <input type="text" class="form-control" formControlName="phone"
+                                        placeholder="5XX...">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Şifre</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                    <input type="password" class="form-control" formControlName="password"
+                                        placeholder="********">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Doğrulama Yöntemi</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+                                <select class="form-select" formControlName="verificationType">
+                                    <option *ngFor="let type of verificationTypes" [value]="type">
+                                        {{ type === 'EMAIL' ? 'E-Posta ile Doğrula' : 'SMS ile Doğrula' }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div formGroupName="addressRequest" class="address-box p-4 mb-4">
+                            <h6 class="fw-bold text-muted mb-3">
+                                <i class="bi bi-geo-alt-fill me-2"></i>Adres Bilgileri
+                            </h6>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Ülke</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-globe"></i></span>
+
+                                    <select class="form-select" formControlName="countryId"
+                                        (change)="onCountryChange()">
+                                        <option [ngValue]="null" disabled>Ülke Seçiniz</option>
+                                        <option *ngFor="let country of countries" [value]="country.id">
+                                            {{ country.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Şehir / Eyalet</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                    <select class="form-select" formControlName="cityId">
+                                        <option [ngValue]="null" disabled>
+                                            {{ states.length > 0 ? 'Şehir Seçiniz' : 'Önce Ülke Seçiniz' }}
+                                        </option>
+                                        <option *ngFor="let state of states" [value]="state.id">
+                                            {{ state.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label text-muted small">Açık Adres</label>
+                                <textarea class="form-control" formControlName="addressText" rows="2"
+                                    placeholder="Mahalle, Cadde, Sokak, No..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label">Profil Fotoğrafı Yükle</label>
+                            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+                            <div class="form-text ms-1">Desteklenen formatlar: .jpg, .png</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">
+                            <i class="bi bi-person-plus-fill me-2"></i> Kaydı Tamamla
+                        </button>
+
+                        <div class="text-center mt-4">
+                            <span class="text-muted small">Zaten hesabınız var mı? </span>
+                            <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Giriş Yap</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

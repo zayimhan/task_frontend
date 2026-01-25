@@ -1,0 +1,75 @@
+<div class="container">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+
+                <div class="card-header text-white text-center py-4">
+                    <h3 class="mb-1">Giriş Yap</h3>
+                    <p class="mb-0 opacity-75 small">Hesabınıza erişmek için bilgilerinizi girin</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div *ngIf="errorMessage && !isRedirecting"
+                        class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                        <div>{{ errorMessage }}</div>
+                    </div>
+
+                    <div *ngIf="isRedirecting" class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                        <div class="spinner-border spinner-border-sm me-2 text-info" role="status"></div>
+                        <div class="fw-bold text-dark">{{ errorMessage }}</div>
+                    </div>
+
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+                        <div class="mb-4">
+                            <label class="form-label">E-Posta Adresi</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                <input type="email" class="form-control" formControlName="email"
+                                    placeholder="ornek@mail.com">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Şifre</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" class="form-control" formControlName="password"
+                                    placeholder="********">
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-primary"
+                                [disabled]="loginForm.invalid || isLoading || isRedirecting">
+
+                                <span *ngIf="isLoading || isRedirecting">
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"
+                                        aria-hidden="true"></span>
+                                    <span *ngIf="isLoading">Giriş Yapılıyor...</span>
+                                    <span *ngIf="isRedirecting">Yönlendiriliyor...</span>
+                                </span>
+
+                                <span *ngIf="!isLoading && !isRedirecting">
+                                    Giriş Yap <i class="bi bi-box-arrow-in-right ms-1"></i>
+                                </span>
+
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <small class="text-muted">
+                        Henüz hesabın yok mu?
+                        <a routerLink="/register" class="text-decoration-none ms-1">Hemen Kayıt Ol</a>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
