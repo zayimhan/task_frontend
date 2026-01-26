@@ -10,7 +10,7 @@ import { environment } from '../../../enviroments/enviroment.prod';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}/auth`;
+  private apiUrl = `${environment.apiUrl}`;
 
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isLoggedIn$ = this.isLoggedInSubject.asObservable();
@@ -34,7 +34,7 @@ export class AuthService {
     // Resmi ekle
     formData.append('image', file);
 
-    return this.http.post(`${this.apiUrl}/register`, formData);
+    return this.http.post(`${this.apiUrl}/auth/register`, formData);
   }
 
   verifyCode(userId: number, code: string): Observable<any> {
@@ -58,7 +58,7 @@ export class AuthService {
   }
 
   login(request: LoginRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, request).pipe(
+    return this.http.post<any>(`${this.apiUrl}/auth/login`, request).pipe(
       tap((response) => {
         // Backend yapına göre token response.data içinde veya direkt response içinde olabilir
         // ApiResponse<String> dönüyorsan response.data içindedir.
@@ -73,7 +73,7 @@ export class AuthService {
 
   autoLogin(): Observable<any> {
     // Interceptor, yukarıda kaydettiğimiz VerifyToken'ı alıp Header'a koyacak.
-    return this.http.post<any>(`${this.apiUrl}/auto-login`, {}).pipe(
+    return this.http.post<any>(`${this.apiUrl}/auth/auto-login`, {}).pipe(
       tap((response) => {
         // Backend şimdi bize gerçek AUTH TOKEN'ı verecek
         const authToken = response.data || response.token || response;
