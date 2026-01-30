@@ -32,10 +32,13 @@
                                     placeholder="11 Haneli TC No" maxlength="11" (input)="onlyNumbers($event)"
                                     [ngClass]="{'is-invalid': isFieldInvalid('tc')}">
                                 <div class="invalid-feedback">
-                                    <span *ngIf="registerForm.get('tc')?.errors?.['required']">TC Kimlik No
+                                    <span *ngIf="registerForm.get('tc')?.hasError('required')">TC Kimlik No
                                         zorunludur.</span>
-                                    <span *ngIf="registerForm.get('tc')?.errors?.['pattern']">Geçerli bir TC No giriniz
+                                    <span *ngIf="registerForm.get('tc')?.hasError('pattern')">Geçerli bir TC No giriniz
                                         (11 hane).</span>
+                                    <span *ngIf="registerForm.get('tc')?.hasError('serverError')">
+                                        {{ registerForm.get('tc')?.getError('serverError') }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -46,9 +49,15 @@
                                 <div class="input-group has-validation">
                                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                                     <input type="text" class="form-control" formControlName="fullName"
-                                        placeholder="Adınız Soyadınız"
+                                        placeholder="Adınız Soyadınız" autocomplete="name"
                                         [ngClass]="{'is-invalid': isFieldInvalid('fullName')}">
-                                    <div class="invalid-feedback">Ad Soyad zorunludur.</div>
+                                    <div class="invalid-feedback">
+                                        <span *ngIf="registerForm.get('fullName')?.hasError('required')">Ad Soyad
+                                            zorunludur.</span>
+                                        <span *ngIf="registerForm.get('fullName')?.hasError('serverError')">
+                                            {{ registerForm.get('fullName')?.getError('serverError') }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -57,9 +66,17 @@
                                 <div class="input-group has-validation">
                                     <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
                                     <input type="email" class="form-control" formControlName="email"
-                                        placeholder="ornek@mail.com"
+                                        placeholder="ornek@mail.com" autocomplete="email"
                                         [ngClass]="{'is-invalid': isFieldInvalid('email')}">
-                                    <div class="invalid-feedback">Geçerli bir e-posta giriniz.</div>
+                                    <div class="invalid-feedback">
+                                        <span *ngIf="registerForm.get('email')?.hasError('required')">E-posta
+                                            zorunludur.</span>
+                                        <span *ngIf="registerForm.get('email')?.hasError('email')">Geçerli bir e-posta
+                                            giriniz.</span>
+                                        <span *ngIf="registerForm.get('email')?.hasError('serverError')">
+                                            {{ registerForm.get('email')?.getError('serverError') }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -72,9 +89,15 @@
                                     <span class="input-group-text bg-white border-end-0 pe-1 text-muted">0</span>
                                     <input type="text" class="form-control border-start-0 ps-1" formControlName="phone"
                                         placeholder="5XX..." maxlength="10" (input)="onlyNumbers($event)"
-                                        [ngClass]="{'is-invalid': isFieldInvalid('phone')}">
+                                        autocomplete="tel" [ngClass]="{'is-invalid': isFieldInvalid('phone')}">
                                     <div class="invalid-feedback">
-                                        Telefon numarası 10 haneli olmalıdır (Örn: 532...).
+                                        <span *ngIf="registerForm.get('phone')?.hasError('required')">Telefon no
+                                            zorunludur.</span>
+                                        <span *ngIf="registerForm.get('phone')?.hasError('pattern')">10 haneli olmalıdır
+                                            (5XX...).</span>
+                                        <span *ngIf="registerForm.get('phone')?.hasError('serverError')">
+                                            {{ registerForm.get('phone')?.getError('serverError') }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +107,15 @@
                                     <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                                     <input type="password" class="form-control" formControlName="password"
                                         placeholder="********" [ngClass]="{'is-invalid': isFieldInvalid('password')}">
-                                    <div class="invalid-feedback">Şifre en az 6 karakter olmalıdır.</div>
+                                    <div class="invalid-feedback">
+                                        <span *ngIf="registerForm.get('password')?.hasError('required')">Şifre
+                                            zorunludur.</span>
+                                        <span *ngIf="registerForm.get('password')?.hasError('minlength')">En az 6
+                                            karakter.</span>
+                                        <span *ngIf="registerForm.get('password')?.hasError('serverError')">
+                                            {{ registerForm.get('password')?.getError('serverError') }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -111,13 +142,22 @@
                                 <div class="input-group has-validation">
                                     <span class="input-group-text"><i class="bi bi-globe"></i></span>
                                     <select class="form-select" formControlName="countryId" (change)="onCountryChange()"
+                                        name="country" autocomplete="country"
                                         [ngClass]="{'is-invalid': registerForm.get('addressRequest.countryId')?.invalid && registerForm.get('addressRequest.countryId')?.touched}">
                                         <option [ngValue]="null" disabled>Ülke Seçiniz</option>
                                         <option *ngFor="let country of countries" [value]="country.id">
                                             {{ country.name }}
                                         </option>
                                     </select>
-                                    <div class="invalid-feedback">Ülke seçimi zorunludur.</div>
+                                    <div class="invalid-feedback">
+                                        <span
+                                            *ngIf="registerForm.get('addressRequest.countryId')?.hasError('required')">Ülke
+                                            seçimi zorunludur.</span>
+                                        <span
+                                            *ngIf="registerForm.get('addressRequest.countryId')?.hasError('serverError')">
+                                            {{ registerForm.get('addressRequest.countryId')?.getError('serverError') }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -125,7 +165,8 @@
                                 <label class="form-label text-muted small">Şehir / Eyalet</label>
                                 <div class="input-group has-validation">
                                     <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                    <select class="form-select" formControlName="cityId"
+                                    <select class="form-select" formControlName="cityId" name="state"
+                                        autocomplete="address-level1"
                                         [ngClass]="{'is-invalid': registerForm.get('addressRequest.cityId')?.invalid && registerForm.get('addressRequest.cityId')?.touched}">
                                         <option [ngValue]="null" disabled>
                                             {{ states.length > 0 ? 'Şehir Seçiniz' : 'Önce Ülke Seçiniz' }}
@@ -134,16 +175,32 @@
                                             {{ state.name }}
                                         </option>
                                     </select>
-                                    <div class="invalid-feedback">Şehir seçimi zorunludur.</div>
+                                    <div class="invalid-feedback">
+                                        <span
+                                            *ngIf="registerForm.get('addressRequest.cityId')?.hasError('required')">Şehir
+                                            seçimi zorunludur.</span>
+                                        <span
+                                            *ngIf="registerForm.get('addressRequest.cityId')?.hasError('serverError')">
+                                            {{ registerForm.get('addressRequest.cityId')?.getError('serverError') }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="mb-0">
                                 <label class="form-label text-muted small">Açık Adres</label>
                                 <textarea class="form-control" formControlName="addressText" rows="2"
-                                    placeholder="Mahalle, Cadde, Sokak, No..."
+                                    placeholder="Mahalle, Cadde, Sokak, No..." autocomplete="street-address"
                                     [ngClass]="{'is-invalid': registerForm.get('addressRequest.addressText')?.invalid && registerForm.get('addressRequest.addressText')?.touched}"></textarea>
-                                <div class="invalid-feedback">Adres detayı zorunludur.</div>
+                                <div class="invalid-feedback">
+                                    <span
+                                        *ngIf="registerForm.get('addressRequest.addressText')?.hasError('required')">Adres
+                                        detayı zorunludur.</span>
+                                    <span
+                                        *ngIf="registerForm.get('addressRequest.addressText')?.hasError('serverError')">
+                                        {{ registerForm.get('addressRequest.addressText')?.getError('serverError') }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 

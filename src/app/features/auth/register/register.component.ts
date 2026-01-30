@@ -31,16 +31,11 @@ export class RegisterComponent implements OnInit {
   ) {
     this.registerForm = this.fb.group({
       tc: ['', [Validators.required, Validators.pattern(/^[1-9][0-9]{10}$/)]],
-
       fullName: ['', Validators.required],
-
       email: ['', [Validators.required, Validators.email]],
-
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-
       password: ['', [Validators.required, Validators.minLength(6)]],
       verificationType: ['EMAIL', Validators.required],
-
       addressRequest: this.fb.group({
         countryId: [null, Validators.required],
         cityId: [null, Validators.required],
@@ -55,19 +50,15 @@ export class RegisterComponent implements OnInit {
 
   onlyNumbers(event: any): void {
     const input = event.target as HTMLInputElement;
-
     input.value = input.value.replace(/[^0-9]/g, '');
-
     const controlName = input.getAttribute('formControlName');
     if (controlName) {
       this.registerForm.get(controlName)?.setValue(input.value);
     }
   }
 
-  // Hata kontrolü için yardımcı fonksiyon (HTML'i temiz tutar)
   isFieldInvalid(fieldName: string): boolean {
     const field = this.registerForm.get(fieldName);
-    // Hata varsa VE (kullanıcı dokunduysa VEYA form gönderildiyse) true döner
     return !!(field?.invalid && (field?.dirty || field?.touched));
   }
 
@@ -111,13 +102,14 @@ export class RegisterComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
+    // Telefon numarasının başına 0 ekleme mantığı (Backend'e göre ayarlayın)
     const formData = { ...this.registerForm.value };
-
     formData.phone = '0' + formData.phone;
 
     this.authService.register(this.registerForm.value, this.selectedFile).subscribe({
       next: (response: any) => {
-        const userId = response.userId || (response.data && response.data.userId);
+        // ApiResponse yapısına göre userId'yi al
+        const userId = response.data ? response.data.userId : response.userId;
         const selectedType = this.registerForm.value.verificationType;
 
         if (userId) {
@@ -131,7 +123,34 @@ export class RegisterComponent implements OnInit {
       },
       error: (err) => {
         console.error('Kayıt Hatası:', err);
-        this.errorMessage = 'Kayıt başarısız: ' + (err.error?.message || 'Sunucu hatası.');
+
+        // 1. Backend'den gelen ana mesajı göster
+        if (err.error && err.error.message) {
+          this.errorMessage = err.error.message;
+        } else {
+          this.errorMessage = 'Kayıt işlemi başarısız oldu.';
+        }
+
+        // 2. Field bazlı detaylı validasyon hatalarını işle
+        if (err.error && err.error.data) {
+          const validationErrors = err.error.data; // Örn: { email: "Geçersiz", tc: "Hatalı" }
+
+          Object.keys(validationErrors).forEach((key) => {
+            // Ana formdaki kontrolü bul (örn: email, tc)
+            let control = this.registerForm.get(key);
+
+            // Eğer adres içindeyse (nested) oraya bak (örn: cityId)
+            if (!control) {
+              control = this.registerForm.get('addressRequest.' + key);
+            }
+
+            if (control) {
+              // Kontrole 'serverError' adında manuel bir hata ekle
+              control.setErrors({ serverError: validationErrors[key] });
+              control.markAsTouched(); // Kırmızı olması için dokunuldu işaretle
+            }
+          });
+        }
       },
     });
   }

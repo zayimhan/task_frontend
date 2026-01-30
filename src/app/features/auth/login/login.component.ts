@@ -14,7 +14,6 @@ export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string = '';
 
-  // YENİ: Yönlendirme ve Yükleme durumlarını yönetmek için
   isLoading: boolean = false;
   isRedirecting: boolean = false;
 
@@ -39,21 +38,18 @@ export class LoginComponent {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        // Başarılı giriş
         this.isLoading = false;
         this.router.navigate(['/home']);
       },
       error: (err) => {
-        this.isLoading = false; // Hata gelince butonu serbest bırak
+        this.isLoading = false;
 
-        // Angular'ın hata paketini açıyoruz
         const backendResponse = err.error;
         const errorMsg = backendResponse?.message;
         const userId = backendResponse?.data;
 
-        // --- MANTIK KONTROLÜ ---
         if (errorMsg === 'VERIFICATION_REQUIRED') {
-          this.isRedirecting = true; // Mavi uyarıyı göster
+          this.isRedirecting = true;
           this.errorMessage =
             'Hesabınız doğrulanmamış. Yeni kod gönderildi, yönlendiriliyorsunuz...';
 

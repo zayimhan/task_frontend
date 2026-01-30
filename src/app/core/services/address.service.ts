@@ -11,12 +11,10 @@ export class AddressService {
 
   constructor(private http: HttpClient) {}
 
-  // Tüm Ülkeleri Getir
   getCountries(): Observable<any> {
     return this.http.get(`${this.apiUrl}/countries`);
   }
 
-  // Seçilen Ülkeye Göre Şehirleri Getir
   getStatesByCountry(countryId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/states/${countryId}`);
   }

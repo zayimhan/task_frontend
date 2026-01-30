@@ -45,12 +45,9 @@ export class AuthService {
 
     return this.http.post<any>(verificationUrl, {}, { params: params }).pipe(
       tap((response) => {
-        // Backend'den dönen VERIFY TOKEN'ı alıyoruz
         const verifyToken = response.data || response.token || response;
 
         if (verifyToken && typeof verifyToken === 'string') {
-          console.log('Verify Token alındı, geçici olarak kaydediliyor...');
-          // Token'ı kaydediyoruz ki birazdan autoLogin çağırınca Header'a eklensin
           this.saveToken(verifyToken);
         }
       }),
@@ -79,7 +76,6 @@ export class AuthService {
         const authToken = response.data || response.token || response;
 
         if (authToken && typeof authToken === 'string') {
-          console.log('Auth Token alındı! Oturum tam açıldı.');
           // Eski VerifyToken'ın üzerine gerçek AuthToken'ı yazıyoruz
           this.saveToken(authToken);
         }
