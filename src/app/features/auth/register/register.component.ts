@@ -22,6 +22,19 @@ export class RegisterComponent implements OnInit {
   countries: any[] = [];
   states: any[] = [];
 
+  // Backend hata kodlarını Türkçeye çeviren sözlük
+  private errorMessages: { [key: string]: string } = {
+    INVALID_TC_NUMBER: 'TC Kimlik Numarası doğrulanamadı (Algoritma hatası).',
+    INVALID_TC_FORMAT: 'TC Kimlik Numarası formatı hatalı.',
+    EMAIL_ALREADY_EXISTS: 'Bu e-posta adresi zaten kayıtlı.',
+    PHONE_ALREADY_EXISTS: 'Bu telefon numarası zaten kayıtlı.',
+    TC_ALREADY_EXISTS: 'Bu TC Kimlik Numarası zaten kayıtlı.',
+    WEAK_PASSWORD:
+      'Şifreniz çok zayıf. En az bir büyük harf, bir sayı ve özel karakter içermelidir.',
+    EMAIL_SEND_FAILED: 'Kayıt yapıldı ancak doğrulama maili gönderilemedi.',
+    VALIDATION_ERROR: 'Lütfen formdaki hatalı alanları düzeltin.',
+  };
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -34,7 +47,7 @@ export class RegisterComponent implements OnInit {
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       verificationType: ['EMAIL', Validators.required],
       addressRequest: this.fb.group({
         countryId: [null, Validators.required],
@@ -94,60 +107,52 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     if (this.registerForm.invalid || !this.selectedFile) {
-      this.errorMessage = 'Lütfen tüm alanları doğru şekilde doldurun ve fotoğraf seçin.';
+      this.errorMessage = 'Lütfen tüm alanları doldurun ve fotoğraf seçin.';
       this.registerForm.markAllAsTouched();
       return;
     }
 
     this.errorMessage = '';
-    this.successMessage = '';
 
-    // Telefon numarasının başına 0 ekleme mantığı (Backend'e göre ayarlayın)
-    const formData = { ...this.registerForm.value };
-    formData.phone = '0' + formData.phone;
+    const formData = this.registerForm.value;
+    if (formData.phone.startsWith('0')) {
+      formData.phone = formData.phone.substring(1);
+    }
 
-    this.authService.register(this.registerForm.value, this.selectedFile).subscribe({
+    this.authService.register(formData, this.selectedFile).subscribe({
       next: (response: any) => {
-        // ApiResponse yapısına göre userId'yi al
-        const userId = response.data ? response.data.userId : response.userId;
-        const selectedType = this.registerForm.value.verificationType;
+        // AuthController -> return Map.of("userId", user.getId())
+        const userId = response.userId;
+        const type = this.registerForm.get('verificationType')?.value;
 
         if (userId) {
+          // Başarılı, doğrulama sayfasına git
           this.router.navigate(['/verify'], {
-            queryParams: { userId: userId, type: selectedType },
+            queryParams: { userId: userId, type: type },
           });
-        } else {
-          this.successMessage = 'Kayıt başarılı! Lütfen giriş yapın.';
-          setTimeout(() => this.router.navigate(['/login']), 2000);
         }
       },
       error: (err) => {
         console.error('Kayıt Hatası:', err);
 
-        // 1. Backend'den gelen ana mesajı göster
-        if (err.error && err.error.message) {
-          this.errorMessage = err.error.message;
-        } else {
-          this.errorMessage = 'Kayıt işlemi başarısız oldu.';
-        }
+        // 1. Backend'den gelen mesaj kodunu al (Örn: INVALID_TC_NUMBER)
+        const errorCode = err.error?.message || 'UNKNOWN_ERROR';
 
-        // 2. Field bazlı detaylı validasyon hatalarını işle
-        if (err.error && err.error.data) {
-          const validationErrors = err.error.data; // Örn: { email: "Geçersiz", tc: "Hatalı" }
+        // 2. Türkçeye çevir
+        this.errorMessage =
+          this.errorMessages[errorCode] || err.error?.message || 'Sunucu hatası oluştu.';
 
+        // 3. Validasyon Hataları (Hangi input hatalı?)
+        if (err.error?.data) {
+          const validationErrors = err.error.data;
           Object.keys(validationErrors).forEach((key) => {
-            // Ana formdaki kontrolü bul (örn: email, tc)
             let control = this.registerForm.get(key);
-
-            // Eğer adres içindeyse (nested) oraya bak (örn: cityId)
-            if (!control) {
-              control = this.registerForm.get('addressRequest.' + key);
-            }
+            // Nested form (adres) kontrolü
+            if (!control) control = this.registerForm.get('addressRequest.' + key);
 
             if (control) {
-              // Kontrole 'serverError' adında manuel bir hata ekle
               control.setErrors({ serverError: validationErrors[key] });
-              control.markAsTouched(); // Kırmızı olması için dokunuldu işaretle
+              control.markAsTouched();
             }
           });
         }

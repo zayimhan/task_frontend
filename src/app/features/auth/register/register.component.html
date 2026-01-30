@@ -110,7 +110,7 @@
                                     <div class="invalid-feedback">
                                         <span *ngIf="registerForm.get('password')?.hasError('required')">Şifre
                                             zorunludur.</span>
-                                        <span *ngIf="registerForm.get('password')?.hasError('minlength')">En az 6
+                                        <span *ngIf="registerForm.get('password')?.hasError('minlength')">En az 8
                                             karakter.</span>
                                         <span *ngIf="registerForm.get('password')?.hasError('serverError')">
                                             {{ registerForm.get('password')?.getError('serverError') }}
