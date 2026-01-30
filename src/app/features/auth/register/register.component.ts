@@ -63,10 +63,16 @@ export class RegisterComponent implements OnInit {
 
   onlyNumbers(event: any): void {
     const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/[^0-9]/g, '');
+    const newValue = input.value.replace(/[^0-9]/g, '');
+
     const controlName = input.getAttribute('formControlName');
     if (controlName) {
-      this.registerForm.get(controlName)?.setValue(input.value);
+      const control = this.registerForm.get(controlName);
+      if (control && control.value !== newValue) {
+        // emitEvent: false diyerek formun durumunu gereksiz yere değiştirmesini engelleyebilirsin
+        // Ancak manuel hataları korumak için hata kontrolünü ayırmalısın.
+        control.setValue(newValue, { emitEvent: false });
+      }
     }
   }
 
@@ -134,25 +140,20 @@ export class RegisterComponent implements OnInit {
       },
       error: (err) => {
         console.error('Kayıt Hatası:', err);
-
-        // 1. Backend'den gelen mesaj kodunu al (Örn: INVALID_TC_NUMBER)
         const errorCode = err.error?.message || 'UNKNOWN_ERROR';
-
-        // 2. Türkçeye çevir
         this.errorMessage =
           this.errorMessages[errorCode] || err.error?.message || 'Sunucu hatası oluştu.';
 
-        // 3. Validasyon Hataları (Hangi input hatalı?)
+        // TÜM FORMU TOUCHED YAP: Bu, isFieldInvalid'in true dönmesini sağlar
+        this.registerForm.markAllAsTouched();
+
         if (err.error?.data) {
           const validationErrors = err.error.data;
           Object.keys(validationErrors).forEach((key) => {
             let control = this.registerForm.get(key);
-            // Nested form (adres) kontrolü
             if (!control) control = this.registerForm.get('addressRequest.' + key);
-
             if (control) {
               control.setErrors({ serverError: validationErrors[key] });
-              control.markAsTouched();
             }
           });
         }

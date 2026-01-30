@@ -37,7 +37,7 @@
                                     <span *ngIf="registerForm.get('tc')?.hasError('pattern')">Geçerli bir TC No giriniz
                                         (11 hane).</span>
                                     <span *ngIf="registerForm.get('tc')?.hasError('serverError')">
-                                        {{ registerForm.get('tc')?.getError('serverError') }}
+                                        {{ errorMessage }}
                                     </span>
                                 </div>
                             </div>
