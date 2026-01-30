@@ -141,22 +141,27 @@ export class RegisterComponent implements OnInit {
       error: (err) => {
         console.error('Kayıt Hatası:', err);
         const errorCode = err.error?.message || 'UNKNOWN_ERROR';
-        this.errorMessage =
-          this.errorMessages[errorCode] || err.error?.message || 'Sunucu hatası oluştu.';
+        this.errorMessage = this.errorMessages[errorCode] || 'Sunucu hatası.';
 
-        // TÜM FORMU TOUCHED YAP: Bu, isFieldInvalid'in true dönmesini sağlar
-        this.registerForm.markAllAsTouched();
+        // ÖNEMLİ: Önce tüm formu "dokunulmamış" yap, sonra tekrar "dokunulmuş" yap.
+        // Bu işlem Angular'ın UI'ı zorla güncellemesini (re-render) sağlar.
+        this.registerForm.markAsUntouched();
 
         if (err.error?.data) {
           const validationErrors = err.error.data;
           Object.keys(validationErrors).forEach((key) => {
             let control = this.registerForm.get(key);
             if (!control) control = this.registerForm.get('addressRequest.' + key);
+
             if (control) {
+              // Hatayı set et
               control.setErrors({ serverError: validationErrors[key] });
             }
           });
         }
+
+        // Şimdi hepsini tekrar "touched" yap ki mesajlar anında belirtsin
+        this.registerForm.markAllAsTouched();
       },
     });
   }

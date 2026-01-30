@@ -30,14 +30,10 @@
                                 <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
                                 <input type="text" class="form-control" formControlName="tc"
                                     placeholder="11 Haneli TC No" maxlength="11" (input)="onlyNumbers($event)"
-                                    [ngClass]="{'is-invalid': isFieldInvalid('tc')}">
+                                    [ngClass]="{'is-invalid': registerForm.get('tc')?.invalid && (registerForm.get('tc')?.touched || errorMessage)}">
                                 <div class="invalid-feedback">
-                                    <span *ngIf="registerForm.get('tc')?.hasError('required')">TC Kimlik No
-                                        zorunludur.</span>
-                                    <span *ngIf="registerForm.get('tc')?.hasError('pattern')">Geçerli bir TC No giriniz
-                                        (11 hane).</span>
                                     <span *ngIf="registerForm.get('tc')?.hasError('serverError')">
-                                        {{ errorMessage }}
+                                        {{ registerForm.get('tc')?.getError('serverError') }}
                                     </span>
                                 </div>
                             </div>
